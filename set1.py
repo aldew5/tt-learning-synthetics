@@ -35,12 +35,11 @@ if __name__ == "__main__":
 
     # data
     I, O = make_low_rank_data(d, k, t, seed=42, device=device)
-    print("Standard deviation of O:", O.std())
     # Normalize the dataset statistics
     O = (O) / O.std()
 
     # NOTE: we keep the hidden layer dimension the same. This corresponds to fig 6a
-    model = MLP(d).to(device)
+    model = MLP(d, d).to(device)
 
     if not args.ivon:
         optimizer = optim.AdamW(model.parameters(), lr=0.001)

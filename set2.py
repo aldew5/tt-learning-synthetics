@@ -13,17 +13,16 @@ if __name__ == "__main__":
     torch.manual_seed(0)
 
     # TODO: by default, weights are uniform random. Atlas doesn't say how they sample 
-    teacher = MLP(d).eval()      
+    teacher = MLP(d, d).eval()      
     for p in teacher.parameters():
         p.requires_grad_(False)
 
     I = torch.randn(t, d)
-    O = teacher(I)   
+    O = teacher(I) 
+    # normalize the dataset statistics
     O = (O) / O.std()
-    # Normalize the dataset statistics
-    print("Standard deviation of O:", O.std())
 
-    M_learn = MLP(d)
+    M_learn = MLP(d, d)
     if not args.ivon:
         optimizer = optim.AdamW(M_learn.parameters(), lr=LR)
     else:

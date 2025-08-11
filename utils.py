@@ -42,12 +42,12 @@ def train(model, optimizer, inputs, targets, ivon=False):
     return losses
 
 class MLP(nn.Module):
-    def __init__(self, dim):
+    def __init__(self, hidden_dim, output_dim):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(dim, dim),
+            nn.Linear(hidden_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(dim, dim)
+            nn.Linear(hidden_dim, output_dim)
         )
     def forward(self, x):
         return self.net(x)
