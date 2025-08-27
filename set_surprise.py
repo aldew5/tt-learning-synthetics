@@ -60,6 +60,7 @@ if __name__ == "__main__":
     # Concatenate all parts 
     O = torch.cat(O_final, dim=0)
     I = torch.cat(I_final, dim=0)
+    print(I.shape, O.shape)
     
     # Create a random permutation of the row indices
     perm = torch.randperm(MIXED)
@@ -69,16 +70,23 @@ if __name__ == "__main__":
     I[FROM_TEACHER:] = I[FROM_TEACHER:][perm]
 
 
-
     M_learn = MLP(d, d)
-    ESS = len(I)/500
+    ESS = len(I)
     name = "AdamW" if not args.ivon else "IVON"
     if not args.ivon:
         optimizer = optim.AdamW(M_learn.parameters(), lr=LR)
     else:
         optimizer = ivon.IVON(M_learn.parameters(), lr=0.1, ess=ESS)
 
-    losses = train(M_learn, optimizer, I, O, args.ivon)
+    stds = []
+    nlpls = []
+    losses = train(M_learn, optimizer, I, O, stds=stds, nlpls=nlpls, ivon=args.ivon)
+    if args.ivon:   
+        plt.plot(nlpls)
+        plt.xlabel("Step j")
+        plt.ylabel("NLPL")
+        plt.show()
+
     print("Final loss:", losses[-1])
 
     plt.plot(losses)
