@@ -103,3 +103,14 @@ parser.add_argument(
     action='store_true',
     help='run IVON instead of AdamW'
 )
+
+def mse_vk(M, k, v):
+    """Normalized MSE"""
+    pred = torch.einsum("vk,btk->btv", M, k)
+    return ((pred - v).pow(2).sum()
+            / (v.pow(2).sum().clamp_min(1e-6)))
+
+def cos_M(M, M_star, eps=1e-10):
+    num = (M * M_star).sum()
+    den = (M.norm() * M_star.norm() + eps)
+    return float(num / den)
